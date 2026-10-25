@@ -34,6 +34,21 @@ Capturas do app rodando localmente em emulação de iPhone (393×852, @3x, Safar
 |---|---|---|
 | ![](docs/mockups-ios/17-juiz-fila-de-avaliacao.png) | ![](docs/mockups-ios/19-advogado-quadro.png) | ![](docs/mockups-ios/21-admin-painel.png) |
 
+## Contas de teste para avaliadores
+
+Contas **públicas, só para demonstração**, com dados fictícios. Elas existem em um banco descartável, separado de qualquer dado real; não use dados pessoais reais.
+
+| Ator | E-mail | Senha |
+|---|---|---|
+| Cliente | `cliente.avaliador@peacelaw.dev` | `cliente-avaliador-2026` |
+| Juiz | `juiz.avaliador@peacelaw.dev` | `juiz-avaliador-2026` |
+| Advogado | `advogado.avaliador@peacelaw.dev` | `advogado-avaliador-2026` |
+| Administrador | `admin.avaliador@peacelaw.dev` | `admin-avaliador-azul-2026` |
+
+- **Demonstração online:** https://peacelaw-demo.vercel.app (ambiente de demonstração isolado: banco próprio e dados fictícios). Se a página pedir login do Vercel, a proteção de implantação ainda está ligada; use a execução local abaixo.
+- **Local:** `python -m scripts.seed_evaluator_accounts --public-demo` (em `backend/`) cria as mesmas quatro contas e três casos de exemplo no banco local. O script **recusa rodar** sem a opção `--public-demo` e em qualquer banco que tenha outras contas, para nunca ser apontado a dados reais.
+- Um caminho sugerido: entre como **cliente**, grave um áudio no passo "Fatos" (Chrome/Edge, com microfone), aprove o texto anonimizado; depois como **juiz**, avalie o caso; como **advogado**, assuma a mediação; como **administrador**, veja o painel e o kit de pitch em `/admin/pitch`. A conta de administrador de demonstração permite testar o 2FA em `/conta/seguranca`.
+
 ## Arquitetura
 
 - **Frontend:** Next.js 16 (Cache Components), React 19, Tailwind v4, componentes shadcn/ui, Vitest.
@@ -68,7 +83,7 @@ export JWT_SECRET="$(python -c 'import secrets;print(secrets.token_urlsafe(48))'
 export RAW_TEXT_KEYS="$(python -c 'from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())')"
 export COOKIE_SECURE=false CORS_ORIGINS=http://localhost:3000
 python -c "import app.models; from app.db import Base, get_engine; Base.metadata.create_all(get_engine())"
-python -m scripts.seed_demo_users      # imprime senhas geradas de cliente, juiz e advogado
+python -m scripts.seed_evaluator_accounts --public-demo   # cria as contas de teste acima e casos de exemplo
 python -m uvicorn main:app --port 8000
 
 # Frontend (em outro terminal)
