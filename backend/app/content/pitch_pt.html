@@ -1,0 +1,282 @@
+<style>
+:host {
+  display: block;
+  --bg: #f5f7f8; --surface: #ffffff; --ink: #14212b; --muted: #5a6b78; --line: #d3dce2;
+  --accent: #0b7a75; --accent-soft: #dff1ef; --plan: #8a5a00; --plan-soft: #fbf0d9;
+  --font-display: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: Consolas, "SFMono-Regular", Menlo, monospace;
+  background: var(--bg); color: var(--ink);
+}
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg: #0e171d; --surface: #16232c; --ink: #e6eef2; --muted: #96a8b4; --line: #2b3d49;
+    --accent: #4fc9c0; --accent-soft: #123a3a; --plan: #f0b84a; --plan-soft: #3a2d10;
+  }
+}
+* { box-sizing: border-box; }
+.pitch { font-family: var(--font-body); font-size: 17px; line-height: 1.55; padding: 40px 16px 72px; }
+.pitch main { max-width: 980px; margin: 0 auto; display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); font-size: 1.1rem; margin-top: 12px; }
+section { display: grid; gap: 20px; min-width: 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 12px 32px; padding-block: 16px; border-block: 1px solid var(--line); }
+.facts div { display: grid; gap: 2px; }
+.facts b { font-family: var(--font-display); font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.facts span { color: var(--muted); font-size: 14px; }
+
+.script { display: grid; border: 1px solid var(--line); background: var(--surface); }
+.beat { display: grid; grid-template-columns: 120px 1fr; gap: 20px; padding: 18px 20px; border-top: 1px solid var(--line); }
+.beat:first-child { border-top: 0; }
+.beat .t { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.beat .t small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.beat .say { font-size: 1.05rem; min-width: 0; }
+.beat .show { color: var(--muted); font-size: 14px; margin-top: 6px; }
+.beat .show::before { content: "Na tela: "; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; }
+.words { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+.chart-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); padding: 12px; }
+svg { display: block; width: 100%; min-width: 760px; height: auto; max-width: 100%; }
+.lane { fill: var(--accent-soft); opacity: .45; }
+.lane-title { fill: var(--muted); font: 600 12px var(--font-mono); letter-spacing: .1em; text-anchor: middle; }
+.node-done { fill: var(--surface); stroke: var(--accent); stroke-width: 1.6; }
+.node-plan { fill: var(--plan-soft); stroke: var(--plan); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.n-title { fill: var(--ink); font: 600 13px var(--font-body); text-anchor: middle; }
+.n-sub { fill: var(--muted); font: 400 10.5px var(--font-mono); text-anchor: middle; }
+.edge { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.edge-plan { fill: none; stroke: var(--plan); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.e-label { fill: var(--muted); font: 400 10.5px var(--font-mono); text-anchor: middle; }
+.arrow-fill { fill: var(--ink); }
+.arrow-plan { fill: var(--plan); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--muted); }
+.legend i { display: inline-block; width: 28px; height: 12px; vertical-align: -1px; margin-right: 8px; }
+.legend .d { border: 1.6px solid var(--accent); background: var(--surface); }
+.legend .p { border: 1.4px dashed var(--plan); background: var(--plan-soft); }
+figure { margin: 0; }
+figcaption { color: var(--muted); font-size: 14px; margin-top: 10px; max-width: 70ch; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.card.plan { background: var(--plan-soft); border-color: var(--plan); border-style: dashed; }
+ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+li::marker { color: var(--accent); }
+.plan li::marker { color: var(--plan); }
+
+.steps { display: grid; border: 1px solid var(--line); background: var(--surface); counter-reset: s; }
+.step { display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 16px 20px; border-top: 1px solid var(--line); counter-increment: s; }
+.step:first-child { border-top: 0; }
+.step::before { content: counter(s); font-family: var(--font-mono); color: var(--accent); font-size: 14px; padding-top: 2px; }
+.step b { font-family: var(--font-display); }
+.step p { color: var(--muted); font-size: 15px; }
+.note { border-left: 3px solid var(--plan); padding: 4px 0 4px 16px; color: var(--muted); }
+@media (max-width: 560px) { .beat { grid-template-columns: 1fr; gap: 6px; } }
+</style>
+
+<div class="pitch">
+<main>
+  <header>
+    <div class="eyebrow">Kit de pitch · 2 minutos</div>
+    <h1>PeaceLaw: resolva a disputa antes que vire processo</h1>
+    <p class="lede">Resolução online de disputas com casos anonimizados, uma nota de chance em juízo dada por juízes e um advogado mediador para fechar o acordo. Tudo abaixo reflete o que existe hoje no código e o que ainda está por vir.</p>
+  </header>
+
+  <div class="facts" role="list">
+    <div role="listitem"><b>3</b><span>atores: cliente, juiz e advogado</span></div>
+    <div role="listitem"><b>555</b><span>testes automatizados (372 da API, 183 da interface)</span></div>
+    <div role="listitem"><b>15</b><span>tipos de dado pessoal removidos</span></div>
+    <div role="listitem"><b>0</b><span>vazamentos em um teste de 3.480 casos de anonimização</span></div>
+    <div role="listitem"><b>180</b><span>dias até o relato original ser apagado</span></div>
+  </div>
+
+  <section id="script">
+    <div class="eyebrow">1 · Roteiro da narração</div>
+    <h2>Cerca de 250 palavras, no ritmo de dois minutos</h2>
+    <div class="script">
+      <div class="beat">
+        <div class="t">0:00 – 0:15<small>Gancho</small></div>
+        <div>
+          <p class="say">“Um processo no Brasil pode levar anos. A maioria dessas disputas poderia terminar em acordo, mas ninguém sabe a sua chance real. O PeaceLaw mostra a sua chance e depois ajuda você a fechar o acordo.”</p>
+          <p class="show">Logo e um calendário passando por vários anos.</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="t">0:15 – 0:40<small>O cliente</small></div>
+        <div>
+          <p class="say">“Você descreve o seu caso em três passos curtos. Antes que alguém leia uma palavra, a nossa camada de privacidade remove nomes, CPF, telefones, endereços e valores. Você revisa a versão anonimizada e aprova. Nada avança sem o seu OK.”</p>
+          <p class="show">Assistente do cliente; uma frase virando etiquetas [NOME] e [CPF].</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="t">0:40 – 1:05<small>O juiz e a nota</small></div>
+        <div>
+          <p class="say">“Um juiz lê apenas o caso anonimizado e dá notas para as provas e para a jurisprudência. Essas notas viram um número: a probabilidade de ganhar em juízo. Chance alta, acordo rápido. Chance baixa, você vê o risco e o custo antes de gastar um centavo.”</p>
+          <p class="show">Tela dividida do juiz; o cartão de probabilidade passando de 62% para a faixa correspondente.</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="t">1:05 – 1:25<small>O mediador</small></div>
+        <div>
+          <p class="say">“Um advogado mediador escolhe o caso no quadro, trabalha pelo acordo e o registra. Caso resolvido, sem passar pelo tribunal.”</p>
+          <p class="show">Kanban do advogado: um cartão indo para “Acordos fechados”.</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="t">1:25 – 1:50<small>Privacidade desde o projeto</small></div>
+        <div>
+          <p class="say">“Privacidade não é um recurso, é a arquitetura. O relato original é criptografado, só o dono consegue lê-lo, e ele é apagado a pedido ou após 180 dias. Pensado para a LGPD desde o primeiro dia.”</p>
+          <p class="show">Ícone de cadeado; o botão “Apagar meu relato original”.</p>
+        </div>
+      </div>
+      <div class="beat">
+        <div class="t">1:50 – 2:00<small>Encerramento</small></div>
+        <div>
+          <p class="say">“A plataforma está construída e testada. Em seguida: pagamentos, câmaras arbitrais e indicação de advogados por IA. PeaceLaw. Resolva com inteligência.”</p>
+          <p class="show">Faixa do roadmap e, depois, o logo.</p>
+        </div>
+      </div>
+    </div>
+    <p class="words">Falado a cerca de 125 palavras por minuto. Corte as notas “Na tela” se gravar só a voz.</p>
+  </section>
+
+  <section id="flow">
+    <div class="eyebrow">2 · Fluxograma</div>
+    <h2>Um caso, da primeira palavra ao acordo assinado</h2>
+    <figure>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 900 800" role="img" aria-label="Fluxograma em quatro colunas. O cliente escreve o caso, a plataforma anonimiza e criptografa, o cliente aprova, um juiz dá as notas, a plataforma calcula a probabilidade, o cliente vê o resultado, um advogado assume o caso e registra o acordo. As caixas tracejadas são planejadas: anonimização por LLM, indicação de advogado por IA, homologação em câmara e pagamento.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrow-fill"/></marker>
+            <marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrow-plan"/></marker>
+          </defs>
+
+          <rect class="lane" x="10" y="48" width="190" height="740"/>
+          <rect class="lane" x="240" y="48" width="190" height="740" opacity="0.2"/>
+          <rect class="lane" x="470" y="48" width="190" height="740"/>
+          <rect class="lane" x="700" y="48" width="190" height="740" opacity="0.2"/>
+          <text class="lane-title" x="105" y="36">CLIENTE</text>
+          <text class="lane-title" x="335" y="36">PLATAFORMA</text>
+          <text class="lane-title" x="565" y="36">JUIZ · ROADMAP</text>
+          <text class="lane-title" x="795" y="36">ADVOGADO</text>
+
+          <path class="edge" d="M105,126 V143 H335 V160" marker-end="url(#ah)"/>
+          <path class="edge" d="M335,216 V233 H105 V250" marker-end="url(#ah)"/>
+          <path class="edge" d="M105,306 V323 H565 V340" marker-end="url(#ah)"/>
+          <path class="edge" d="M565,396 V413 H335 V430" marker-end="url(#ah)"/>
+          <path class="edge" d="M335,486 V503 H105 V520" marker-end="url(#ah)"/>
+          <path class="edge" d="M335,503 H795 V610" marker-end="url(#ah)"/>
+          <path class="edge" d="M795,666 V700" marker-end="url(#ah)"/>
+          <path class="edge-plan" d="M470,188 H430" marker-end="url(#ahp)"/>
+          <path class="edge-plan" d="M660,638 H700" marker-end="url(#ahp)"/>
+          <path class="edge-plan" d="M700,728 H660" marker-end="url(#ahp)"/>
+          <text class="e-label" x="335" y="318">só o texto anonimizado</text>
+          <text class="e-label" x="565" y="498">nota publicada no quadro</text>
+
+          <rect class="node-done" x="10" y="70" width="190" height="56"/>
+          <text class="n-title" x="105" y="94">Escreve o caso</text>
+          <text class="n-sub" x="105" y="112">assistente · consentimento</text>
+
+          <rect class="node-done" x="240" y="160" width="190" height="56"/>
+          <text class="n-title" x="335" y="184">Anonimiza e criptografa</text>
+          <text class="n-sub" x="335" y="202">por regras · AWAITING</text>
+
+          <rect class="node-done" x="10" y="250" width="190" height="56"/>
+          <text class="n-title" x="105" y="274">Revisa e aprova</text>
+          <text class="n-sub" x="105" y="292">READY_FOR_JUDGE</text>
+
+          <rect class="node-done" x="470" y="340" width="190" height="56"/>
+          <text class="n-title" x="565" y="364">Dá as notas</text>
+          <text class="n-sub" x="565" y="382">provas + jurisprudência, 0–10</text>
+
+          <rect class="node-done" x="240" y="430" width="190" height="56"/>
+          <text class="n-title" x="335" y="454">Calcula a probabilidade</text>
+          <text class="n-sub" x="335" y="472">≥80 alta · 60–79 média · &lt;60 baixa</text>
+
+          <rect class="node-done" x="10" y="520" width="190" height="56"/>
+          <text class="n-title" x="105" y="544">Vê nota e conselho</text>
+          <text class="n-sub" x="105" y="562">EVALUATED</text>
+
+          <rect class="node-done" x="700" y="610" width="190" height="56"/>
+          <text class="n-title" x="795" y="634">Assume o caso</text>
+          <text class="n-sub" x="795" y="652">IN_MEDIATION</text>
+
+          <rect class="node-done" x="700" y="700" width="190" height="56"/>
+          <text class="n-title" x="795" y="724">Registra o acordo</text>
+          <text class="n-sub" x="795" y="742">RESOLVED</text>
+
+          <rect class="node-plan" x="470" y="160" width="190" height="56"/>
+          <text class="n-title" x="565" y="184">Anonimização por LLM</text>
+          <text class="n-sub" x="565" y="202">substitui a camada de regras</text>
+
+          <rect class="node-plan" x="470" y="610" width="190" height="56"/>
+          <text class="n-title" x="565" y="634">Indicação por IA</text>
+          <text class="n-sub" x="565" y="652">hoje: o advogado se atribui</text>
+
+          <rect class="node-plan" x="470" y="700" width="190" height="56"/>
+          <text class="n-title" x="565" y="724">Câmara + pagamento</text>
+          <text class="n-sub" x="565" y="742">homologação, honorários</text>
+        </svg>
+      </div>
+      <figcaption>Sempre ativo em todas as etapas: o relato original é criptografado, visível só para o dono, apagável a pedido e removido automaticamente 180 dias após a resolução. Juízes e advogados nunca o veem, e os juízes nunca veem as notas uns dos outros.</figcaption>
+    </figure>
+    <div class="legend">
+      <span><i class="d"></i>Construído e testado</span>
+      <span><i class="p"></i>Planejado, ainda não construído</span>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="eyebrow">3 · Situação</div>
+    <h2>O que está pronto e o que o produto final fará</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>Pronto hoje</h3>
+        <ul>
+          <li>Assistente do cliente em três passos (fatos, provas, revisão) com caixa de consentimento e texto de consentimento versionado.</li>
+          <li>Anonimização por regras de e-mail, CPF, CNPJ, RG, CNH, passaporte, telefone, endereço, nomes de empresas, nomes de pessoas, valores e dados bancários.</li>
+          <li>Tela dividida do juiz (60/40) com prévia da nota ao vivo.</li>
+          <li>Nota de probabilidade e o conselho para chance alta, média e baixa.</li>
+          <li>Kanban do advogado: Oportunidades, Em contato, Acordos fechados.</li>
+          <li>Login com acesso por papel; o logout encerra todas as sessões.</li>
+          <li>Originais criptografados, botão de apagar e rotina de limpeza em 180 dias.</li>
+          <li>Limites de requisições e de tamanho, cabeçalhos de segurança e inicialização endurecida em produção.</li>
+          <li>Repositório, pipeline de CI, banco de produção com migrações e um papel de banco com privilégio mínimo.</li>
+        </ul>
+      </div>
+      <div class="card plan">
+        <h3>Quando estiver finalizado</h3>
+        <ul>
+          <li>No ar em um domínio público, com frontend e API publicados.</li>
+          <li>Indicação de advogado por IA, em vez de o advogado se atribuir o caso.</li>
+          <li>Anonimização por modelo de linguagem, atrás da mesma interface.</li>
+          <li>Homologação dos acordos assinados por câmara arbitral.</li>
+          <li>Pagamentos e divisão de honorários.</li>
+          <li>Envio real de provas (hoje os arquivos ficam só no navegador).</li>
+          <li>Console de administração para contas e câmaras.</li>
+          <li>Revisão jurídica do termo de consentimento e do aviso de privacidade.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Ainda não está no ar: o código, os testes, o pipeline e o banco de produção estão prontos, mas o app não foi publicado em um endereço público. O aviso de privacidade e o termo de consentimento ainda são minutas aguardando revisão jurídica. No vídeo, diga “construído e testado”, não “lançado”.</p>
+  </section>
+
+  <section id="how">
+    <div class="eyebrow">4 · Como foi feito</div>
+    <h2>Construído por uma equipe de engenharia com IA, com cada etapa revisada</h2>
+    <div class="steps">
+      <div class="step"><div><b>Fonte da verdade do produto</b><p>Sete cadernos do NotebookLM (documento de produto, arquitetura, lógica de pontuação, segurança, design, conformidade com a LGPD e com a OAB) alimentaram a especificação. Onde um caderno divergia do primeiro rascunho, o caderno prevaleceu.</p></div></div>
+      <div class="step"><div><b>Brainstorm, especificação, plano</b><p>As decisões de projeto foram escritas primeiro: estrutura do repositório, Neon Postgres, IDs de caso em UUID e anonimização por regras atrás de uma interface substituível. Cada marco ganhou seu próprio plano escrito.</p></div></div>
+      <div class="step"><div><b>Marco 1: API e banco</b><p>FastAPI, SQLAlchemy e Alembic no Neon, o motor de anonimização e os endpoints de casos.</p></div></div>
+      <div class="step"><div><b>Marco 2: design system</b><p>Next.js, Tailwind e shadcn, com os tokens de design e os componentes de upload, probabilidade e status portados para React tipado.</p></div></div>
+      <div class="step"><div><b>Marco 3: os três atores</b><p>Autenticação, acesso por papel, ciclo de vida do caso, originais criptografados e as telas de cliente, juiz e advogado ligadas à API.</p></div></div>
+      <div class="step"><div><b>Teste primeiro, revisão sempre</b><p>Cada tarefa foi escrita com o teste antes e conferida por um segundo revisor. Revisão de código em dois eixos, auditoria estática de segurança e ataques ao vivo contra o app em execução, além de uma passada no navegador por todas as telas.</p></div></div>
+      <div class="step"><div><b>Marco 4: endurecimento</b><p>Correções vindas dessas revisões: vazamentos de anonimização fechados (nomes, texto em maiúsculas, números de cartão, números de processo), limites contra negação de serviço, revogação de sessão e condições de corrida no fluxo do caso.</p></div></div>
+      <div class="step"><div><b>LGPD e operação</b><p>Consentimento versionado, endpoint para apagar o original, rotina de retenção, script auditado de criação de contas, guia de implantação, pipeline de CI e um banco de produção separado.</p></div></div>
+    </div>
+  </section>
+</main>
+</div>
